@@ -1,9 +1,15 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef} from "react";
 import { Form } from "react-bootstrap";
 
 import "./letterbox.css";
 
-const LetterBox = ({ letter, status, onChange, forwardRef }) => {
+const LetterBox = ({ letter, status, onChange, isFocused, isDisabled }) => {
+    const controlRef = useRef(null);
+    useEffect(() => {
+        if (isFocused) {
+            controlRef.current.focus();
+        }
+    }, [isFocused]);
 
     const handleChange = (input) => {
         const newValue = input ? input[0].toUpperCase() : "";
@@ -11,8 +17,9 @@ const LetterBox = ({ letter, status, onChange, forwardRef }) => {
     };
 
     return <Form.Control
-        ref={forwardRef}
-        className={status}
+        ref={controlRef}
+        className={status + " text-center"}
+        disabled={isDisabled}
         size="lg"
         type="text"
         placeholder=""

@@ -10,10 +10,6 @@
     background-color: lightcoral;
 }
 
-.form-control.disabled {
-    background-color: lightgray;
-}
-
 .form-control {
     width: 3em !important;
 }
