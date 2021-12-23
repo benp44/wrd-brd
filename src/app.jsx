@@ -23,23 +23,42 @@ const App = () => {
     const [gridState, setGridState] = useState(Array(MAX_GUESS_COUNT).fill().map(_ => Array(WORD_LENGTH).fill().map(_ => "")));
 
     const onLetterChanged = (rowId, letterId, newLetter) => {
-        if (rowId != currentActiveRow) {
-            return;
-        }
         const newGrid = [...gridState];
-        newGrid[rowId][letterId] = newLetter;
-        setGridState(newGrid);
+        if (newGrid[rowId]) {
+            newGrid[rowId][letterId] = newLetter;
+            setGridState(newGrid);
+        }
+    };
+
+    const isCurrentRowFilled = () => {
+        return gridState[currentActiveRow]?.every(letter => letter !== "");
+    }
+
+    const isCorrectWordEntered = () => {
+        return gridState.map(row => row.reduce((prevLetter, currLetter) => prevLetter + currLetter)).some(guess => guess === word);
     };
 
     const onSubmit = () => {
-        const newOpenRow = currentActiveRow + 1;
-        setCurrentActiveRow(newOpenRow);
+        if (!isCurrentRowFilled()) {
+            return;
+        }
 
-        if (gridState.map(row => row.reduce((prevLetter, currLetter) => prevLetter + currLetter)).some(guess => guess === word)) {
+        const newActiveRow = currentActiveRow + 1;
+
+        if (isCorrectWordEntered()) {
             setGameState("winner");
-        } else if (newOpenRow >= MAX_GUESS_COUNT) {
+        } else if (newActiveRow >= MAX_GUESS_COUNT) {
             setGameState("loser");
         }
+
+        // Transfer correct letters to the new row
+        gridState[currentActiveRow].forEach((letter, letterId) => {
+            if (letter === word[letterId]) {
+                onLetterChanged(newActiveRow, letterId, letter);
+            }
+        });
+
+        setCurrentActiveRow(newActiveRow);
     };
 
     return (
@@ -51,7 +70,7 @@ const App = () => {
             />
             <Message
                 show={gameState === "loser"}
-                message={`Sorry, you lose. Big-time. ${word} was the word you were looking for`}
+                message={`Sorry, you lose. Big-time. You were looking for ${word}.`}
                 onClose={() => window.location.reload(false)}
             />
             <Container>
@@ -60,6 +79,7 @@ const App = () => {
                     currentActiveRow={currentActiveRow}
                     word={word}
                     onLetterChanged={onLetterChanged}
+                    onSubmit={onSubmit}
                 />
                 <Row
                     className="mt-3"
@@ -71,7 +91,7 @@ const App = () => {
                             size="md"
                             variant="primary"
                             onClick={onSubmit}
-                            disabled={gridState[currentActiveRow]?.some(letter => letter === "")}
+                            disabled={!isCurrentRowFilled()}
                         >
                             Check
                         </Button>

@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 
 import "./letterbox.css";
 
-const LetterBox = ({ letter, status, onChange, isFocused, isDisabled }) => {
+const LetterBox = ({ letter, status, isFocused, isDisabled, onChange, onSubmit }) => {
     const controlRef = useRef(null);
     useEffect(() => {
         if (isFocused) {
@@ -16,6 +16,12 @@ const LetterBox = ({ letter, status, onChange, isFocused, isDisabled }) => {
         onChange(newValue);
     };
 
+    const handleKeyDown = (key) => {
+        if (key === "Enter") {
+            onSubmit();
+        }
+    };
+
     return <Form.Control
         ref={controlRef}
         className={status + " text-center"}
@@ -24,7 +30,8 @@ const LetterBox = ({ letter, status, onChange, isFocused, isDisabled }) => {
         type="text"
         placeholder=""
         value={letter}
-        onChange={event => handleChange(event.target.value)}
+        onChange={(event) => handleChange(event.target.value)}
+        onKeyDown={(event) => handleKeyDown(event.key)}
     />;
 };
 

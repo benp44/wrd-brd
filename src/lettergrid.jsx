@@ -1,13 +1,17 @@
-import React from "react";
+import React, {useState} from "react";
 import {Col, Row} from "react-bootstrap";
 
 import LetterBox from "./letterbox";
 
-const LetterGrid = ({gridState, currentActiveRow, word, onLetterChanged}) => {
+const LetterGrid = ({gridState, currentActiveRow, word, onLetterChanged, onSubmit}) => {
     const focusedLetterId = gridState[currentActiveRow]?.findIndex(value => value === "");
 
     const handleLetterChange = (rowId, letterId, newLetter) => {
         onLetterChanged(rowId, letterId, newLetter);
+    };
+
+    const handleSubmit = () => {
+        onSubmit();
     };
 
     const getLetterStatus = (rowId, letterId, letter) => {
@@ -49,6 +53,7 @@ const LetterGrid = ({gridState, currentActiveRow, word, onLetterChanged}) => {
                             isFocused={letterId === focusedLetterId && rowId === currentActiveRow}
                             isDisabled={rowId !== currentActiveRow}
                             onChange={(newLetter) => handleLetterChange(rowId, letterId, newLetter)}
+                            onSubmit={handleSubmit}
                         />
                     </Col>
                 )
