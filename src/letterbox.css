@@ -1,0 +1,19 @@
+.form-control.correct {
+    background-color: lightgreen;
+}
+
+.form-control.outofplace {
+    background-color: yellow;
+}
+
+.form-control.incorrect {
+    background-color: lightcoral;
+}
+
+.form-control.disabled {
+    background-color: lightgray;
+}
+
+.form-control {
+    width: 3em !important;
+}
