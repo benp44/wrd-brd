@@ -51,7 +51,7 @@ const App = () => {
             />
             <Message
                 show={gameState === "loser"}
-                message="Sorry, you lose. Big-time."
+                message={`Sorry, you lose. Big-time. ${word} was the word you were looking for`}
                 onClose={() => window.location.reload(false)}
             />
             <Container>
