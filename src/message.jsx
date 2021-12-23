@@ -1,4 +1,5 @@
-import React from "react"
+import React from "react";
+import PropTypes from "prop-types";
 import {Button, Modal} from "react-bootstrap";
 
 function Message({message, show, onClose}) {
@@ -23,5 +24,11 @@ function Message({message, show, onClose}) {
         </Modal>
     );
 }
+
+Message.propTypes = {
+    message: PropTypes.string,
+    show: PropTypes.bool,
+    onClose: PropTypes.func,
+};
 
 export default Message;

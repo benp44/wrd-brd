@@ -1,37 +1,18 @@
-import React, {useState} from "react";
+import React from "react";
 import {Col, Row} from "react-bootstrap";
 
 import LetterBox from "./letterbox";
+import {CELL_STATE_OPEN} from "./states";
 
-const LetterGrid = ({gridState, currentActiveRow, word, onLetterChanged, onSubmit}) => {
-    const focusedLetterId = gridState[currentActiveRow]?.findIndex(value => value === "");
+const LetterGrid = ({gridState, currentActiveRowId, onLetterChanged, onSubmit}) => {
+    const focusedLetterId = gridState[currentActiveRowId]?.findIndex(value => value.letter === "");
 
-    const handleLetterChange = (rowId, letterId, newLetter) => {
-        onLetterChanged(rowId, letterId, newLetter);
+    const handleLetterChange = (rowId, columnId, newLetter) => {
+        onLetterChanged(rowId, columnId, newLetter, CELL_STATE_OPEN);
     };
 
     const handleSubmit = () => {
         onSubmit();
-    };
-
-    const getLetterStatus = (rowId, letterId, letter) => {
-        if (rowId > currentActiveRow) {
-            return "disabled";
-        }
-
-        if (rowId === currentActiveRow) {
-            return ""
-        }
-
-        if (letter === word[letterId]) {
-            return "correct";
-        }
-
-        if (word.includes(letter)) {
-            return "outofplace";
-        }
-
-        return "incorrect";
     };
 
     return gridState.map((row, rowId) =>
@@ -41,18 +22,17 @@ const LetterGrid = ({gridState, currentActiveRow, word, onLetterChanged, onSubmi
             md="auto"
         >
             {
-                row.map((letter, letterId) =>
+                row.map((cell, columnId) =>
                     <Col
                         className="px-1"
-                        key={`column-${rowId}-${letterId}`}
+                        key={`column-${rowId}-${columnId}`}
                     >
                         <LetterBox
-                            key={`letter-box-${rowId}-${letterId}`}
-                            letter={letter}
-                            status={getLetterStatus(rowId, letterId, letter)}
-                            isFocused={letterId === focusedLetterId && rowId === currentActiveRow}
-                            isDisabled={rowId !== currentActiveRow}
-                            onChange={(newLetter) => handleLetterChange(rowId, letterId, newLetter)}
+                            key={`letter-box-${rowId}-${columnId}`}
+                            letter={cell.letter}
+                            state={cell.state}
+                            isFocused={columnId === focusedLetterId && rowId === currentActiveRowId}
+                            onChange={(newLetter) => handleLetterChange(rowId, columnId, newLetter)}
                             onSubmit={handleSubmit}
                         />
                     </Col>

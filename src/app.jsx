@@ -6,79 +6,126 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { wordList } from "./word-list";
 import LetterGrid from "./lettergrid";
 import Message from "./message";
+import {
+    CELL_STATE_CORRECT,
+    CELL_STATE_DISABLED,
+    CELL_STATE_INCORRECT,
+    CELL_STATE_OPEN,
+    CELL_STATE_OUT_OF_PLACE,
+    GAME_STATE_LOST,
+    GAME_STATE_ONGOING,
+    GAME_STATE_WON
+} from "./states";
 
 const WORD_LENGTH = 5;
 const MAX_GUESS_COUNT = 5;
+
+const getInitialGrid = () => {
+    return Array(MAX_GUESS_COUNT).fill().map((_, rowId) => {
+        return Array(WORD_LENGTH).fill().map(() => ({
+            letter: "",
+            state: rowId === 0 ? CELL_STATE_OPEN : CELL_STATE_DISABLED,
+        }));
+    });
+};
 
 const selectRandomWord = () => {
     const correctLengthWords = wordList.filter(entry => entry.length === WORD_LENGTH);
     const word = correctLengthWords[Math.floor(Math.random() * correctLengthWords.length)];
     return word.toUpperCase();
-}
+};
 
 const App = () => {
     const [word] = useState(selectRandomWord());
-    const [gameState, setGameState] = useState("ongoing");
-    const [currentActiveRow, setCurrentActiveRow] = useState(0);
-    const [gridState, setGridState] = useState(Array(MAX_GUESS_COUNT).fill().map(_ => Array(WORD_LENGTH).fill().map(_ => "")));
+    const [gameState, setGameState] = useState(GAME_STATE_ONGOING);
+    const [gridState, setGridState] = useState(getInitialGrid());
+    const [currentActiveRowId, setCurrentActiveRowId] = useState(0);
+    const [hintMessage, setHintMessage] = useState("");
 
-    const onLetterChanged = (rowId, letterId, newLetter) => {
+    const getCurrentWord = () => gridState[currentActiveRowId]?.reduce((prev, currentCell) => prev + currentCell.letter, "");
+    const isCurrentRowComplete = () => gridState[currentActiveRowId]?.every(cell => cell.letter !== "");
+    const isCurrentWordValid = () => wordList.includes(getCurrentWord());
+
+    const updateGrid = (rowId, columnId, newLetter, state) => {
         const newGrid = [...gridState];
         if (newGrid[rowId]) {
-            newGrid[rowId][letterId] = newLetter;
+            newGrid[rowId][columnId] = {
+                letter: newLetter,
+                state: state,
+            };
+
             setGridState(newGrid);
         }
     };
 
-    const isCurrentRowFilled = () => {
-        return gridState[currentActiveRow]?.every(letter => letter !== "");
-    }
-
-    const isCorrectWordEntered = () => {
-        return gridState.map(row => row.reduce((prevLetter, currLetter) => prevLetter + currLetter)).some(guess => guess === word);
-    };
-
     const onSubmit = () => {
-        if (!isCurrentRowFilled()) {
+        setHintMessage("");
+
+        if (!isCurrentRowComplete()) {
+            setHintMessage("You must complete the row");
             return;
         }
-
-        const newActiveRow = currentActiveRow + 1;
-
-        if (isCorrectWordEntered()) {
-            setGameState("winner");
-        } else if (newActiveRow >= MAX_GUESS_COUNT) {
-            setGameState("loser");
+        if (!isCurrentWordValid()) {
+            setHintMessage("The word was not known");
+            return;
         }
+        
+        const nextRowId = currentActiveRowId + 1;
 
-        // Transfer correct letters to the new row
-        gridState[currentActiveRow].forEach((letter, letterId) => {
-            if (letter === word[letterId]) {
-                onLetterChanged(newActiveRow, letterId, letter);
+        // Evaluate the current row
+        gridState[currentActiveRowId].forEach((cell, columnId) => {
+            if (cell.letter === word[columnId]) {
+                updateGrid(currentActiveRowId, columnId, cell.letter, CELL_STATE_CORRECT);
+            } else if (word.includes(cell.letter)) {
+                updateGrid(currentActiveRowId, columnId, cell.letter, CELL_STATE_OUT_OF_PLACE);
+            } else {
+                updateGrid(currentActiveRowId, columnId, cell.letter, CELL_STATE_INCORRECT);
             }
         });
 
-        setCurrentActiveRow(newActiveRow);
+        // Check for win
+        if (word === getCurrentWord()) {
+            setGameState(GAME_STATE_WON);
+            return;
+        }
+        
+        // Check for loss
+        if (nextRowId === MAX_GUESS_COUNT) {
+            setGameState(GAME_STATE_LOST);
+            return;
+        }
+
+        // Open the next row
+        gridState[currentActiveRowId].forEach((cell, columnId) => {
+            if (cell.letter === word[columnId]) {
+                updateGrid(nextRowId, columnId, cell.letter, CELL_STATE_CORRECT);
+            } else {
+                updateGrid(nextRowId, columnId, "", CELL_STATE_OPEN);
+            }
+        });
+
+        setCurrentActiveRowId(nextRowId);
     };
 
     return (
         <>
             <Message
-                show={gameState === "winner"}
+                show={gameState === GAME_STATE_WON}
                 message="You're a winner, baby"
                 onClose={() => window.location.reload(false)}
             />
             <Message
-                show={gameState === "loser"}
-                message={`Sorry, you lose. Big-time. You were looking for ${word}.`}
+                show={gameState === GAME_STATE_LOST}
+                message={`Sorry, you lost. Big-time. You were looking for ${word}.`}
                 onClose={() => window.location.reload(false)}
             />
-            <Container>
+            <Container
+                className="container"
+            >
                 <LetterGrid
                     gridState={gridState}
-                    currentActiveRow={currentActiveRow}
-                    word={word}
-                    onLetterChanged={onLetterChanged}
+                    currentActiveRowId={currentActiveRowId}
+                    onLetterChanged={updateGrid}
                     onSubmit={onSubmit}
                 />
                 <Row
@@ -86,20 +133,25 @@ const App = () => {
                 >
                     <Col
                         className="px-1"
+                        xl={3}
                     >
                         <Button 
                             size="md"
                             variant="primary"
                             onClick={onSubmit}
-                            disabled={!isCurrentRowFilled()}
                         >
                             Check
                         </Button>
                     </Col>
+                    <Col
+                        className="px-1"
+                    >
+                        {hintMessage}
+                    </Col>
                 </Row>
             </Container>
         </>
-    )
-}
+    );
+};
 
-export default App
+export default App;
