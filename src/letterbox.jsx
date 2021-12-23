@@ -20,6 +20,8 @@ const LetterBox = ({ letter, state, isFocused, onChange, onSubmit }) => {
     const handleKeyDown = (key) => {
         if (key === "Enter") {
             onSubmit();
+        } else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(key)) {
+            handleChange(key);
         }
     };
 
