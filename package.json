@@ -6,7 +6,8 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "webpack-dev-server --mode development --open --hot --port 3000",
-        "build": "mkdir -p dist && webpack --mode production"
+        "build": "mkdir dist && webpack --mode production",
+        "lint": "npx eslint src --ext .js"
     },
     "keywords": [],
     "author": "",

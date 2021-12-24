@@ -1,5 +1,6 @@
 
 export const CELL_STATE_OPEN = "open";
+export const CELL_STATE_OPEN_INCORRECT = "open-incorrect";
 export const CELL_STATE_DISABLED = "disabled";
 export const CELL_STATE_CORRECT = "correct";
 export const CELL_STATE_OUT_OF_PLACE = "outofplace";
