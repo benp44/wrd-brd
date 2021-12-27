@@ -1,5 +1,6 @@
 import React from "react";
 import {Col, Row} from "react-bootstrap";
+import PropTypes from "prop-types";
 
 import LetterBox from "./letterbox";
 import {CELL_STATE_OPEN} from "./states";
