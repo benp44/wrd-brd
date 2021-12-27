@@ -4,7 +4,7 @@ import { Form } from "react-bootstrap";
 
 import "./letterbox.css";
 
-const LetterBox = ({ letter, state, isFocused, onChange, onSubmit }) => {
+const LetterBox = ({ id, letter, state, isFocused, onChange, onSubmit }) => {
     const controlRef = useRef(null);
     useEffect(() => {
         if (isFocused) {
@@ -26,7 +26,7 @@ const LetterBox = ({ letter, state, isFocused, onChange, onSubmit }) => {
     };
 
     return <Form.Control
-        ref={controlRef}
+        id={id}
         className={state + " text-center"}
         disabled={state !== "open"} 
         size="lg"
@@ -35,15 +35,17 @@ const LetterBox = ({ letter, state, isFocused, onChange, onSubmit }) => {
         value={letter}
         onChange={(event) => handleChange(event.target.value)}
         onKeyDown={(event) => handleKeyDown(event.key)}
+        ref={controlRef}
     />;
 };
 
 LetterBox.propTypes = {
-    letter: PropTypes.string,
-    state: PropTypes.string,
-    isFocused: PropTypes.bool,
-    onChange: PropTypes.func,
-    onSubmit: PropTypes.func,
+    id: PropTypes.string.isRequired,
+    letter: PropTypes.string.isRequired,
+    state: PropTypes.string.isRequired,
+    isFocused: PropTypes.bool.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
 
 export default LetterBox;
