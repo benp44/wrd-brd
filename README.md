@@ -17,3 +17,10 @@ Run dev-server with: `npm start`
 
 Pull requests very welcome ^_^
 
+## Tests
+
+Integration-style tests are implemented using [Cypress](https://docs.cypress.io) and can be run with: `npm test`.
+
+If you are already running the development webserver, you can run just the Cypress tests against that using `npm run cy:run`.
+
+To run the tests interactively, use `npm run cy:open`.
