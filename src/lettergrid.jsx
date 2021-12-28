@@ -1,5 +1,6 @@
 import React from "react";
 import {Col, Row} from "react-bootstrap";
+import PropTypes from "prop-types";
 
 import LetterBox from "./letterbox";
 import {CELL_STATE_OPEN} from "./states";
@@ -29,6 +30,7 @@ const LetterGrid = ({gridState, currentActiveRowId, onLetterChanged, onSubmit}) 
                     >
                         <LetterBox
                             key={`letter-box-${rowId}-${columnId}`}
+                            id={`letter-box-${rowId}-${columnId}`}
                             letter={cell.letter}
                             state={cell.state}
                             isFocused={columnId === focusedLetterId && rowId === currentActiveRowId}
@@ -40,6 +42,13 @@ const LetterGrid = ({gridState, currentActiveRowId, onLetterChanged, onSubmit}) 
             }
         </Row>
     );
+};
+
+LetterGrid.propTypes = {
+    gridState: PropTypes.array.isRequired,
+    currentActiveRowId: PropTypes.number.isRequired,
+    onLetterChanged: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
 };
 
 export default LetterGrid;
