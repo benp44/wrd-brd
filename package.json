@@ -7,6 +7,7 @@
         "start": "webpack-dev-server --mode development --hot --port 3000",
         "build": "mkdir -p dist && webpack --mode production",
         "test": "start-server-and-test start http://localhost:3000 cy:run",
+        "lint": "npx eslint src --ext .js,.jsx",
         "cy:run": "cypress run",
         "cy:open": "cypress open"
     },

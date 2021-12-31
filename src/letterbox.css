@@ -1,3 +1,7 @@
+:root {
+    --error-color: 240,128,128;
+}
+
 .form-control.correct {
     background-color: lightgreen;
 }
@@ -7,7 +11,11 @@
 }
 
 .form-control.incorrect {
-    background-color: lightcoral;
+    background-color: rgba(var(--error-color), 1);
+}
+
+.form-control.open-incorrect {
+    background-color: rgba(var(--error-color), 0.5);
 }
 
 .form-control {

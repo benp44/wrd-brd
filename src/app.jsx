@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {Button, Col, Container, Row} from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Col, Container, Row } from "react-bootstrap";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -11,6 +11,7 @@ import {
     CELL_STATE_DISABLED,
     CELL_STATE_INCORRECT,
     CELL_STATE_OPEN,
+    CELL_STATE_OPEN_INCORRECT,
     CELL_STATE_OUT_OF_PLACE,
     GAME_STATE_LOST,
     GAME_STATE_ONGOING,
@@ -48,6 +49,13 @@ const App = () => {
 
     const updateGrid = (rowId, columnId, newLetter, state) => {
         const newGrid = [...gridState];
+
+        if (state == CELL_STATE_OPEN) {
+            if (newGrid.some(row => row.some(item => item.letter == newLetter && item.state == CELL_STATE_INCORRECT))) {
+                state = CELL_STATE_OPEN_INCORRECT;
+            }
+        }
+
         if (newGrid[rowId]) {
             newGrid[rowId][columnId] = {
                 letter: newLetter,
@@ -69,7 +77,7 @@ const App = () => {
             setHintMessage("The word was not known");
             return;
         }
-        
+
         const nextRowId = currentActiveRowId + 1;
 
         // Evaluate the current row
@@ -88,7 +96,7 @@ const App = () => {
             setGameState(GAME_STATE_WON);
             return;
         }
-        
+
         // Check for loss
         if (nextRowId === MAX_GUESS_COUNT) {
             setGameState(GAME_STATE_LOST);
@@ -135,7 +143,7 @@ const App = () => {
                         className="px-1"
                         xl={3}
                     >
-                        <Button 
+                        <Button
                             size="md"
                             variant="primary"
                             onClick={onSubmit}

@@ -1,7 +1,8 @@
-import React, {useEffect, useRef} from "react";
+import React, { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Form } from "react-bootstrap";
 
+import { CELL_STATE_OPEN, CELL_STATE_OPEN_INCORRECT } from "./states";
 import "./letterbox.css";
 
 const LetterBox = ({ id, letter, state, isFocused, onChange, onSubmit }) => {
@@ -17,24 +18,29 @@ const LetterBox = ({ id, letter, state, isFocused, onChange, onSubmit }) => {
         onChange(newValue);
     };
 
-    const handleKeyDown = (key) => {
+    const handleKeyPress = (event) => {
+        const key = event.key
         if (key === "Enter") {
             onSubmit();
-        } else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(key)) {
+        }
+        else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".includes(key)) {
             handleChange(key);
         }
-    };
+        else {
+            event.preventDefault();
+        }
+    }
 
     return <Form.Control
         id={id}
         className={state + " text-center"}
-        disabled={state !== "open"} 
+        disabled={state !== CELL_STATE_OPEN && state !== CELL_STATE_OPEN_INCORRECT}
         size="lg"
         type="text"
         placeholder=""
         value={letter}
         onChange={(event) => handleChange(event.target.value)}
-        onKeyDown={(event) => handleKeyDown(event.key)}
+        onKeyPress={(event) => handleKeyPress(event)}
         ref={controlRef}
     />;
 };
