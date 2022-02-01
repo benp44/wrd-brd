@@ -38,6 +38,7 @@ const LetterBox = ({ id, letter, state, isFocused, onChange, onSubmit }) => {
         size="lg"
         type="text"
         placeholder=""
+        autoComplete="off"
         value={letter}
         onChange={(event) => handleChange(event.target.value)}
         onKeyPress={(event) => handleKeyPress(event)}
